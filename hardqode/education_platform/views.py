@@ -64,34 +64,6 @@ class ProductStatsViewSet(viewsets.ReadOnlyModelViewSet):
 
     Provides statistics on the number of Lessons, Groups, and Access objects associated with each Product.
 
-    ## Actions
-
-    ### Retrieve
-
-    Returns a list of Product statistics.
-
-    ```
-    GET /api/v1/products/stats/
-    ```
-
-    ### Example Response
-
-    ```json
-    [
-        {
-            "id": 1,
-            "num_lessons": 3,
-            "num_groups": 2,
-            "num_access": 1
-        },
-        {
-            "id": 2,
-            "num_lessons": 5,
-            "num_groups": 3,
-            "num_access": 2
-        }
-    ]
-    ```
     """
     queryset = Product.objects.all()
     serializer_class = ProductStatsSerializer
