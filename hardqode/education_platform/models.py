@@ -8,7 +8,11 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     start_datetime = models.DateTimeField()
     cost = models.DecimalField(max_digits=10, decimal_places=2)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_products')
+    creator = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='created_products'
+    )
     min_users_in_group = models.IntegerField(default=1)
     max_users_in_group = models.IntegerField(default=10)
 
@@ -17,7 +21,11 @@ class Product(models.Model):
 
 
 class Lesson(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='lessons')
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='lessons'
+    )
     name = models.CharField(max_length=255)
     video_url = models.URLField()
 
@@ -27,13 +35,27 @@ class Lesson(models.Model):
 
 class Group(models.Model):
     name = models.CharField(max_length=255)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='groups')
-    users = models.ManyToManyField(User, related_name='user_groups')
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='groups'
+    )
+    users = models.ManyToManyField(
+        User,
+        related_name='user_groups'
+    )
 
 
 class Access(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='accesses')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='accesses')
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='accesses'
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='accesses')
 
 
 @receiver(post_save, sender=Access)
@@ -41,8 +63,7 @@ def distribute_user_to_group(sender, instance, created, **kwargs):
     if created:
         product = instance.product
         user = instance.user
-        group = product.groups.annotate(count=models.Count('users')).filter(count__lt=models.F('max_users')).order_by(
-            'count').first()
+        group = product.groups.annotate(count=models.Count('users')).filter(count__lt=models.F('max_users')).order_by('count').first()
         if group:
             group.users.add(user)
             return group
